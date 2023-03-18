@@ -25,6 +25,7 @@ time_list = []
 last_coordinats_r = []
 health = 3
 stop = False
+cnt1 = 0
 
 class GameSprite(pygame.sprite.Sprite):
     def __init__(self, picture, x, y):
@@ -288,6 +289,8 @@ def rot_center(image, angle):
     return rot_image
 press = False
 press_drift = False
+differents1 = 2
+differents2 = 0
 #СОЗДАНИЕ КАРТИНОК В ПРАВУЮ СТОРОНУ
 car_sprite_5_r = rot_center(car_sprite, 355)
 car_sprite_10_r = rot_center(car_sprite, 350)
@@ -396,11 +399,13 @@ w0 = Walls(wall, 575, 0)
 last_coordinats_l.append(w0.rect.x)
 last_coordinats_l.append(w0.rect.y)
 w1 = Walls(wall, 925, 0)
+health_y = 700
 last_coordinats_r.append(w1.rect.x)
 last_coordinats_r.append(w1.rect.y)
 finish = False
 while run:
     window.fill((0, 0, 0))
+
     for e in pygame.event.get():
         if e.type == pygame.QUIT:
             run = False
@@ -429,36 +434,39 @@ while run:
             if e.key == pygame.K_s:
                 hero.y_speed = 0
                 press = False
-    if finish == False:
-        if last_walls[-1] == "s" and last_walls[-2] == "l" or last_walls[-1] == "l" and last_walls[-2] == "l" or last_walls[-1] == "s" and last_walls[-2] == "s" and last_walls[-3] == "l":
-            rand = choice(walls_way_l)
-            last_walls.append(rand)
-        elif last_walls[-1] == "s" and last_walls[-2] == "r" or last_walls[-1] == "r" and last_walls[-2] == "r" or last_walls[-1] == "s" and last_walls[-2] == "s" and last_walls[-3] == "r":
-            rand = choice(walls_way_r)
-            last_walls.append(rand)
-        elif last_walls[-1] == "s" and last_walls[-2] == "s":
-            rand = choice(walls_way_s)
-            last_walls.append(rand)
-        else:
-            rand = choice(walls_way_s)
-            last_walls.append(rand)
 
-        if last_walls[-1] == "l":
-            make_l(last_coordinats_l, last_coordinats_r, cnt)
-            cnt += 1
-        elif last_walls[-1] == "r":
-            make_r(last_coordinats_l, last_coordinats_r, cnt)
-            cnt += 1
-        else:
-            make_s(last_coordinats_l, last_coordinats_r, cnt)
-            cnt += 1
+    if finish == False:
+        if cnt1 % 3 == 0:
+            if last_walls[-1] == "s" and last_walls[-2] == "l" or last_walls[-1] == "l" and last_walls[-2] == "l" or last_walls[-1] == "s" and last_walls[-2] == "s" and last_walls[-3] == "l" or last_walls[-1] == "l" and last_walls[-2] == "r" and last_walls[-3] == "l" and last_walls[-4] == "l":
+                rand = choice(walls_way_l)
+                last_walls.append(rand)
+            elif last_walls[-1] == "s" and last_walls[-2] == "r" or last_walls[-1] == "r" and last_walls[-2] == "r" or last_walls[-1] == "s" and last_walls[-2] == "s" and last_walls[-3] == "r" or last_walls[-1] == "r" and last_walls[-2] == "l" and last_walls[-3] == "r" and last_walls[-4] == "r":
+                rand = choice(walls_way_r)
+                last_walls.append(rand)
+            elif last_walls[-1] == "s" and last_walls[-2] == "s":
+                rand = choice(walls_way_s)
+                last_walls.append(rand)
+            else:
+                rand = choice(walls_way_s)
+                last_walls.append(rand)
+            cnt1 += 1
+            if last_walls[-1] == "l":
+                make_l(last_coordinats_l, last_coordinats_r, cnt)
+                cnt += 1
+            elif last_walls[-1] == "r":
+                make_r(last_coordinats_l, last_coordinats_r, cnt)
+                cnt += 1
+            else:
+                make_s(last_coordinats_l, last_coordinats_r, cnt)
+                cnt += 1
         for i in left_walls:
             i.update_wall(press, press_drift)
             i.reset()
         for i in right_walls:
             i.update_wall(press, press_drift)
             i.reset()
-
+        else:
+            cnt1 += 1
         if stop:
             #hero.update()
             hero.reset()
@@ -467,12 +475,13 @@ while run:
         else:
             hero.reset()
             hero.update()
+        health_y -= 0.5
         health_label = font.render("HEALTH:", True, (255, 255, 255))
-        window.blit(health_label, (hero.rect.x + 400, hero.rect.y + 200))
+        window.blit(health_label, (1400, hero.rect.y + 10))
         hp_list = []
         hp_list.append(str(health))
         hp = font.render(hp_list[0], True, (255, 255, 255))
-        window.blit(hp, (hero.rect.x + 540, hero.rect.y + 200))
+        window.blit(hp, (1550, hero.rect.y + 10))
         for i in left_walls:
             if pygame.sprite.collide_rect(hero, i) and health > 0:
                 hero.rect.x += 80
